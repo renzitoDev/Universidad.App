@@ -17,41 +17,62 @@ import ListarAsistencia from "./Pages/ListarAsistencia";
 import CrearAsistencia from "./Pages/CrearAsistencia";
 import ListarBienestar from "./Pages/ListarBienestar";
 import CrearBienestar from "./Pages/CrearBienestar";
-
+import PrivateRoute from "./Routes/PrivateRoute";
 
 function App() {
   return (
     <Routes>
+      {/*  Rutas públicas */}
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      {/* 🔹 Rutas privadas (con sidebar y topbar) */}
-      <Route element={<Dash/>}>
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/perfil" element={<Perfil />} />
-        <Route path="/estadisticas" element={<Estadisticas />} />
 
-        <Route path="/ListarEstudiante" element={<ListarEstudiante />} />
-        <Route path="/CrearEstudiante" element={<CrearEstudiante />} />
+      {/*  ADMIN */}
+      <Route element={<PrivateRoute allowedRoles={["Admin"]} />}>
+        <Route element={<Dash />}>
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/perfil" element={<Perfil />} />
+          <Route path="/admin/estadisticas" element={<Estadisticas />} />
+          <Route path="/admin/ListarEstudiante" element={<ListarEstudiante />} />
+          <Route path="/admin/CrearEstudiante" element={<CrearEstudiante />} />
+          <Route path="/admin/ListarHistorial" element={<ListarHistorial />} />
+          <Route path="/admin/CrearHistorial" element={<CrearHistorial />} />
+          <Route path="/admin/ListarFamiliar" element={<ListarFamiliar />} />
+          <Route path="/admin/CrearFamiliar" element={<CrearFamiliar />} />
+          <Route path="/admin/ListarNota" element={<ListarNota />} />
+          <Route path="/admin/CrearNota" element={<CrearNota />} />
+          <Route path="/admin/ListarAsistencia" element={<ListarAsistencia />} />
+          <Route path="/admin/CrearAsistencia" element={<CrearAsistencia />} />
+          <Route path="/admin/ListarBienestar" element={<ListarBienestar />} />
+          <Route path="/admin/CrearBienestar" element={<CrearBienestar />} />
+        </Route>
+      </Route>
 
-        <Route path="/ListarHistorial" element={<ListarHistorial />} />
-        <Route path="/CrearHistorial" element={<CrearHistorial />} />
+      {/*  PROFESOR */}
+      <Route element={<PrivateRoute allowedRoles={["Profesor"]} />}>
+        <Route element={<Dash />}>
+          <Route path="/profesor/dashboard" element={<Dashboard />} />
+          <Route path="/profesor/perfil" element={<Perfil />} />
+          <Route path="/profesor/ListarNota" element={<ListarNota />} />
+          <Route path="/profesor/CrearNota" element={<CrearNota />} />
+          <Route path="/profesor/ListarAsistencia" element={<ListarAsistencia />} />
+          <Route path="/profesor/CrearAsistencia" element={<CrearAsistencia />} />
+        </Route>
+      </Route>
 
-        <Route path="/ListarFamiliar" element={<ListarFamiliar />} />
-        <Route path="/CrearFamiliar" element={<CrearFamiliar />} />
-
-        <Route path="/ListarNota" element={<ListarNota />} />
-        <Route path="/CrearNota" element={<CrearNota />} />
-
-        <Route path="/ListarAsistencia" element={<ListarAsistencia />} />
-        <Route path="/CrearAsistencia" element={<CrearAsistencia />} />
-
-        <Route path="/ListarBienestar" element={<ListarBienestar />} />
-        <Route path="/CrearBienestar" element={<CrearBienestar />} />
+      {/*  ESTUDIANTE */}
+      <Route element={<PrivateRoute allowedRoles={["Estudiante"]} />}>
+        <Route element={<Dash />}>
+          <Route path="/estudiante/dashboard" element={<Dashboard />} />
+          <Route path="/estudiante/perfil" element={<Perfil />} />
+          <Route path="/estudiante/ListarHistorial" element={<ListarHistorial />} />
+          <Route path="/estudiante/ListarNota" element={<ListarNota />} />
+          <Route path="/estudiante/ListarAsistencia" element={<ListarAsistencia />} />
+          <Route path="/estudiante/ListarBienestar" element={<ListarBienestar />} />
+        </Route>
       </Route>
     </Routes>
   );
 }
 
 export default App;
-

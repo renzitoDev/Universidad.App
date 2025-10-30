@@ -1,7 +1,63 @@
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
+const Perfil = () => {
+  const { user, updateUserPassword } = useAuth(); // Obtiene el usuario actual y función para actualizar
+  const [formPassword, setFormPassword] = useState({
+    actual: "",
+    nueva: "",
+    confirmar: "",
+  });
 
-export default function Perfil() {
+  const [message, setMessage] = useState("");
+
+  // ✅ Manejar cambio de campos del formulario de contraseña
+  const handleChange = (e) => {
+    setFormPassword({ ...formPassword, [e.target.id]: e.target.value });
+  };
+
+  // ✅ Manejar cambio de contraseña
+  const handlePasswordChange = (e) => {
+    e.preventDefault();
+    setMessage("");
+
+    // Validaciones básicas
+    if (!formPassword.actual || !formPassword.nueva || !formPassword.confirmar) {
+      setMessage("Por favor completa todos los campos.");
+      return;
+    }
+
+    if (formPassword.actual !== user.password) {
+      setMessage("La contraseña actual no es correcta.");
+      return;
+    }
+
+    if (formPassword.nueva !== formPassword.confirmar) {
+      setMessage("Las contraseñas nuevas no coinciden.");
+      return;
+    }
+
+    if (formPassword.nueva.length < 8) {
+      setMessage("La nueva contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+
+    // Actualiza contraseña en el contexto
+    updateUserPassword(formPassword.nueva);
+    setMessage("✅ Contraseña actualizada exitosamente.");
+    setFormPassword({ actual: "", nueva: "", confirmar: "" });
+  };
+
+  // Si no hay usuario (por si acaso)
+  if (!user) {
+    return (
+      <div className="text-center mt-5">
+        <h3>No hay usuario activo. Por favor inicia sesión.</h3>
+      </div>
+    );
+  }
+
   return (
     <div id="wrapper">
       {/* Sidebar */}
@@ -61,14 +117,15 @@ export default function Perfil() {
                       />
                     </div>
 
+                    {/* Información del usuario */}
                     <h4 className="font-weight-bold" id="nombre-perfil">
-                      Admin Sistema
+                      {user.firstName} {user.lastName}
                     </h4>
                     <p className="text-muted mb-1" id="rol-perfil">
-                      Administrador
+                      {user.rol}
                     </p>
                     <p className="text-muted mb-3" id="email-perfil">
-                      admin@sistema.edu
+                      {user.email}
                     </p>
 
                     <div className="small">
@@ -92,7 +149,7 @@ export default function Perfil() {
                         <i className="fas fa-envelope mr-2"></i>Email
                       </strong>
                       <p className="text-muted mb-0" id="info-email">
-                        admin@sistema.edu
+                        {user.email}
                       </p>
                     </div>
                     <div className="mb-3">
@@ -136,7 +193,7 @@ export default function Perfil() {
                             type="text"
                             className="form-control"
                             id="input-nombres"
-                            value="Admin"
+                            value={user.firstName}
                             disabled
                           />
                         </div>
@@ -146,7 +203,7 @@ export default function Perfil() {
                             type="text"
                             className="form-control"
                             id="input-apellidos"
-                            value="Sistema"
+                            value={user.lastName}
                             disabled
                           />
                         </div>
@@ -158,7 +215,7 @@ export default function Perfil() {
                             type="email"
                             className="form-control"
                             id="input-email"
-                            value="admin@sistema.edu"
+                            value={user.email}
                             disabled
                           />
                         </div>
@@ -217,14 +274,16 @@ export default function Perfil() {
                     </h6>
                   </div>
                   <div className="card-body">
-                    <form id="form-password">
+                    <form id="form-password" onSubmit={handlePasswordChange}>
                       <div className="mb-3">
                         <label className="form-label">Contraseña Actual</label>
                         <input
                           type="password"
                           className="form-control"
-                          id="password-actual"
+                          id="actual"
                           placeholder="Ingrese su contraseña actual"
+                          value={formPassword.actual}
+                          onChange={handleChange}
                         />
                       </div>
                       <div className="mb-3">
@@ -232,8 +291,10 @@ export default function Perfil() {
                         <input
                           type="password"
                           className="form-control"
-                          id="password-nueva"
+                          id="nueva"
                           placeholder="Ingrese nueva contraseña"
+                          value={formPassword.nueva}
+                          onChange={handleChange}
                         />
                         <small className="form-text text-muted">
                           La contraseña debe tener al menos 8 caracteres,
@@ -247,13 +308,26 @@ export default function Perfil() {
                         <input
                           type="password"
                           className="form-control"
-                          id="password-confirmar"
+                          id="confirmar"
                           placeholder="Confirme la nueva contraseña"
+                          value={formPassword.confirmar}
+                          onChange={handleChange}
                         />
                       </div>
-                      <button type="button" className="btn btn-primary">
+                      <button type="submit" className="btn btn-primary">
                         <i className="fas fa-key fa-sm"></i> Cambiar Contraseña
                       </button>
+                      {message && (
+                        <p
+                          className={`mt-3 ${
+                            message.startsWith("✅")
+                              ? "text-success"
+                              : "text-danger"
+                          }`}
+                        >
+                          {message}
+                        </p>
+                      )}
                     </form>
                   </div>
                 </div>
@@ -313,4 +387,6 @@ export default function Perfil() {
       </div> 
     </div>
   );
-}
+};
+
+export default Perfil;
